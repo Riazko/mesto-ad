@@ -7,15 +7,12 @@ import {
   deleteCard,
   changeLikeCardStatus,
 } from "./components/api.js";
-
 import { createCardElement } from "./components/card.js";
-
 import {
   openModalWindow,
   closeModalWindow,
   setCloseModalWindowEventListeners,
 } from "./components/modal.js";
-
 import { enableValidation, clearValidation } from "./components/validation.js";
 
 const validationSettings = {
@@ -29,7 +26,6 @@ const validationSettings = {
 
 enableValidation(validationSettings);
 
-// -------------------- DOM --------------------
 const placesWrap = document.querySelector(".places__list");
 
 const profileFormModalWindow = document.querySelector(".popup_type_edit");
@@ -59,7 +55,6 @@ const avatarFormModalWindow = document.querySelector(".popup_type_edit-avatar");
 const avatarForm = avatarFormModalWindow.querySelector(".popup__form");
 const avatarInput = avatarForm.querySelector(".popup__input");
 
-// -------------------- INFO POPUP (по твоей вёрстке) --------------------
 const cardInfoModalWindow = document.querySelector(".popup_type_info");
 const cardInfoTitle = cardInfoModalWindow.querySelector(".popup__title");
 const cardInfoText = cardInfoModalWindow.querySelector(".popup__text");
@@ -74,10 +69,8 @@ const infoUserPreviewTemplate = document.querySelector(
   "#popup-info-user-preview-template"
 ).content;
 
-// -------------------- STATE --------------------
 let currentUserId = null;
 
-// -------------------- HELPERS --------------------
 const setButtonLoading = (button, isLoading, loadingText) => {
   if (!button) return;
   if (isLoading) {
@@ -113,9 +106,6 @@ const createInfoString = (label, value) => {
 
   term.textContent = label;
   description.textContent = value;
-
-  // ВАЖНО: в шаблоне обёртка div с dt/dd, а в dl должны быть dt/dd.
-  // Поэтому добавляем в dl именно dt и dd из item.
   const fragment = document.createDocumentFragment();
   fragment.append(term, description);
   return fragment;
@@ -135,16 +125,11 @@ const handleInfoClick = (cardId) => {
     .then((cards) => {
       const cardData = cards.find((c) => c._id === cardId);
       if (!cardData) return;
-
-      // Заголовки (можно оставить как есть, но лучше заполнять)
       cardInfoTitle.textContent = "Информация о карточке";
       cardInfoText.textContent = "Лайкнули:";
-
-      // очистка
       cardInfoModalInfoList.innerHTML = "";
       cardInfoModalUsersList.innerHTML = "";
 
-      // наполнение dl
       cardInfoModalInfoList.append(
         createInfoString("Описание:", cardData.name),
         createInfoString(
@@ -157,8 +142,6 @@ const handleInfoClick = (cardId) => {
           String(cardData.likes?.length ?? 0)
         )
       );
-
-      // список лайкнувших
       (cardData.likes || []).forEach((user) => {
         cardInfoModalUsersList.append(createUserPreview(user));
       });
@@ -168,7 +151,6 @@ const handleInfoClick = (cardId) => {
     .catch((err) => console.log(err));
 };
 
-// -------------------- CARD RENDER --------------------
 const renderCard = (cardData) => {
   const cardElement = createCardElement(cardData, {
     onPreviewPicture: handlePreviewPicture,
@@ -216,7 +198,6 @@ const renderCard = (cardData) => {
     },
   });
 
-  // скрыть корзину у НЕ автора
   if (cardData.owner?._id !== currentUserId) {
     const deleteBtn = cardElement.querySelector(
       ".card__control-button_type_delete"
@@ -224,7 +205,6 @@ const renderCard = (cardData) => {
     if (deleteBtn) deleteBtn.remove();
   }
 
-  // счётчик лайков (старт)
   const likeCountEl = cardElement.querySelector(".card__like-count");
   if (likeCountEl) {
     likeCountEl.textContent = Array.isArray(cardData.likes)
@@ -232,14 +212,12 @@ const renderCard = (cardData) => {
       : 0;
   }
 
-  // состояние лайка (старт)
   const likeButton = cardElement.querySelector(".card__like-button");
   if (likeButton && Array.isArray(cardData.likes)) {
     const isLikedByMe = cardData.likes.some((u) => u._id === currentUserId);
     likeButton.classList.toggle("card__like-button_is-active", isLikedByMe);
   }
 
-  // ✅ кнопка info — ВЕШАЕМ ТУТ, без правок card.js
   const infoBtn = cardElement.querySelector(".card__control-button_type_info");
   if (infoBtn) {
     infoBtn.addEventListener("click", () => handleInfoClick(cardData._id));
@@ -248,7 +226,6 @@ const renderCard = (cardData) => {
   return cardElement;
 };
 
-// -------------------- SUBMITS --------------------
 const handleProfileFormSubmit = (evt) => {
   evt.preventDefault();
   const submitButton = profileForm.querySelector(".popup__button");
@@ -298,7 +275,6 @@ const handleCardFormSubmit = (evt) => {
     .finally(() => setButtonLoading(submitButton, false));
 };
 
-// -------------------- LISTENERS --------------------
 profileForm.addEventListener("submit", handleProfileFormSubmit);
 cardForm.addEventListener("submit", handleCardFormSubmit);
 avatarForm.addEventListener("submit", handleAvatarFromSubmit);
@@ -326,7 +302,6 @@ document.querySelectorAll(".popup").forEach((popup) => {
   setCloseModalWindowEventListeners(popup);
 });
 
-// -------------------- INIT --------------------
 Promise.all([getCardList(), getUserInfo()])
   .then(([cards, userData]) => {
     currentUserId = userData._id;
