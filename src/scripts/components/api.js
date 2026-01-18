@@ -1,7 +1,7 @@
 const config = {
   baseUrl: "https://mesto.nomoreparties.co/v1/apf-cohort-202",
   headers: {
-    authorization: "e8768a0d-92af-411d-8c5b-a0b48d462a02",
+    authorization: "8ffbffb0-3fa7-4531-8418-ea0820459160",
     "Content-Type": "application/json",
   },
 };
@@ -60,3 +60,4 @@ export const changeLikeCardStatus = (cardID, isLiked) => {
     headers: config.headers,
   }).then(getResponseData);
 };
+
