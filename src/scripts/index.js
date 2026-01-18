@@ -14,7 +14,7 @@ import {
   setCloseModalWindowEventListeners,
 } from "./components/modal.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
-
+// проверка
 const validationSettings = {
   formSelector: ".popup__form",
   inputSelector: ".popup__input",
